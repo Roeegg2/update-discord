@@ -1,2 +1,2 @@
 # update-discord
-simple script for popular linux distrobutions to automate updating Discord 
+simple script for Linux distrubtions using apt/dnf to get discord .deb (or .rpm) package, install, and remove itself because im tired of doing this manually.
