@@ -2,19 +2,22 @@
 
 # Function to display usage information
 usage() {
-    echo "Usage: $0 [-r]"
-    echo "  -r    run: run Discord after installation AND CLOSE TERMINAL"
-    echo "  -s	  setup: move this script into /bin"
+    echo "Usage: $0 [-r] [-s]"
+    echo "  -r    run: run Discord after installation"
+    echo "  -s    setup: move this script into /bin"
     exit 1
 }
 
 # Parse command-line options
 option_r=0
 option_s=0
-while getopts ":r" opt; do
+while getopts ":rs" opt; do
     case ${opt} in
         r )
             option_r=1
+            ;;
+        s )
+            option_s=1
             ;;
         \? )
             usage
@@ -25,6 +28,7 @@ shift $((OPTIND -1))
 
 # Function to install Discord for Debian-based systems
 install_deb() {
+    echo "Installing Discord for Debian-based system..."
     wget "https://discord.com/api/download?platform=linux&format=deb" -O discord-current-version.deb
     sudo apt install -y ./discord-current-version.deb
     rm discord-current-version.deb
@@ -32,6 +36,7 @@ install_deb() {
 
 # Function to install Discord for Fedora-based systems
 install_rpm() {
+    echo "Installing Discord for Fedora-based system..."
     wget "https://discord.com/api/download?platform=linux&format=rpm" -O discord-current-version.rpm
     sudo dnf install -y ./discord-current-version.rpm
     rm discord-current-version.rpm
@@ -45,15 +50,24 @@ elif [ -x "$(command -v dnf)" ]; then
     # Fedora-based
     install_rpm
 else
-    echo "unsupported package manager"
+    echo "Unsupported package manager"
     exit 1
 fi
 
+# Handle options
+if [ $option_s -eq 1 ]; then
+    echo "Moving script to /bin..."
+    sudo mv "$0" /bin/
+    echo "Script moved to /bin. You can now run it as a command from anywhere."
+    exit 0
+fi
+
 # Run Discord if -r was specified
-if [ $option_r -eq 1]; then
-    sudo mv udiscord /bin
-elif [ $option_r -eq 1 ]; then
+if [ $option_r -eq 1 ]; then
+    echo "Running Discord..."
     discord &
     exit 0
 fi
+
+echo "No options specified or no action taken."
 
